@@ -1,12 +1,16 @@
 import { withAuth } from "@kinde-oss/kinde-auth-nextjs/middleware";
+import useStore from "./app/store/zustand.store";
+
+const store = useStore.getState();
 
 export default withAuth(
   async function middleware(req) {
-    console.log("look at me", req.kindeAuth);
+    const userData = req.kindeAuth;
+    const name = `${userData.given_name ?? ""} ${userData.family_name ?? ""}`;
+    store.setUser(userData.id, userData.email, name);
   },
   {
     isReturnToCurrentPage: true,
-    loginPage: "/login",
     publicPaths: ["/"],
   }
 );

@@ -23,7 +23,7 @@ const Sidebar = () => {
   const pathname = usePathname(); // Ensures it's a client-side component
 
   return (
-    <div className="h-screen bg-white text-black  dark:bg-gray-900 dark:text-white transition-all w-20 md:w-64">
+    <div className="h-screen bg-white text-black  dark:bg-gray-900 dark:text-white transition-all w-20 md:w-64 border-r-2 border-gray-200 dark:border-gray-700">
       <nav className="flex flex-col mt-4">
         {sidebarItems.map((item) => {
           const isActive = pathname === item.href;

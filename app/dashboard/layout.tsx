@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Sidebar from "../../components/Sidebar";
-
+import prisma from "../../lib/db";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -18,11 +19,46 @@ export const metadata: Metadata = {
     "Your AI Powered Daily Note Taking App| Dashboard the place all things work",
 };
 
-export default function RootLayout({
+async function getData({
+  email,
+  id,
+  firstName,
+  lastName,
+}: {
+  email: string;
+  id: string;
+  firstName: string | undefined | null;
+  lastName: string | undefined | null;
+}) {
+  const user = await prisma.user.findUnique({
+    where: { id: id },
+    select: { id: true, stripeCustomerId: true },
+  });
+
+  if (!user) {
+    await prisma.user.create({
+      data: {
+        id: id,
+        email: email,
+        name: (firstName ?? "") + " " + (lastName ?? ""),
+      },
+    });
+  }
+}
+
+export default async function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  await getData({
+    email: user.email as string,
+    id: user.id as string,
+    firstName: user.given_name as string,
+    lastName: user.family_name as string,
+  });
   return (
     <html lang="en">
       <body

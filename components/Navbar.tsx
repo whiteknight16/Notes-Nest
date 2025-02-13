@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ModeToggler } from "./ModeToggler";
 import {
@@ -10,17 +10,21 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 
 export default function Navbar() {
   const { isAuthenticated } = useKindeBrowserClient();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="w-full bg-white dark:bg-gray-900 shadow-md px-6 py-4 flex justify-between items-center">
+    <nav className="w-full bg-white dark:bg-gray-900 shadow-md dark:shadow-lg px-6 py-4 flex justify-between items-center">
       {/* Logo */}
-      <h1 className="text-3xl font-bold text-black dark:text-white">
-        Notes<span className="text-primary">Nest</span>
-      </h1>
+
+      <Link href="/" prefetch={true}>
+        <h1 className="text-3xl font-bold text-black dark:text-white">
+          Notes<span className="text-primary">Nest</span>
+        </h1>
+      </Link>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex space-x-6 items-center">
@@ -32,9 +36,10 @@ export default function Navbar() {
           </LogoutLink>
         ) : (
           <>
-            <LoginLink postLoginRedirectURL="/dashboard">
+            <LoginLink postLoginRedirectURL="/">
               <Button>Sign In</Button>
             </LoginLink>
+
             <RegisterLink postLoginRedirectURL="/dashboard">
               <Button variant="outline">Sign Up</Button>
             </RegisterLink>
@@ -65,6 +70,7 @@ export default function Navbar() {
                 <LoginLink postLoginRedirectURL="/dashboard">
                   <Button>Sign In</Button>
                 </LoginLink>
+
                 <RegisterLink postLoginRedirectURL="/dashboard">
                   <Button variant="outline">Sign Up</Button>
                 </RegisterLink>
