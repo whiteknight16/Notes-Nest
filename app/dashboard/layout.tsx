@@ -32,7 +32,7 @@ async function getData({
 }) {
   const user = await prisma.user.findUnique({
     where: { id: id },
-    select: { id: true, stripeCustomerId: true },
+    select: { id: true, stripeCustomerId: true, colorScheme: true },
   });
 
   if (!user) {
@@ -62,7 +62,7 @@ export default async function DashboardLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <div className="flex">
           <Sidebar />

@@ -1,8 +1,7 @@
-"use client"; // Ensures this is a client component
+"use client";
 
 import React from "react";
 import { Home, Settings, CreditCard } from "lucide-react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -20,16 +19,16 @@ const sidebarItems: SideBarItems[] = [
 ];
 
 const Sidebar = () => {
-  const pathname = usePathname(); // Ensures it's a client-side component
+  const pathname = usePathname();
 
   return (
-    <div className="h-screen bg-white text-black  dark:bg-gray-900 dark:text-white transition-all w-20 md:w-64 border-r-2 border-gray-200 dark:border-gray-700">
-      <nav className="flex flex-col mt-4">
+    <div className="min-h-screen bg-white text-black dark:bg-gray-900 dark:text-white transition-all w-20 md:w-64 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+      <nav className="flex flex-col pt-4 gap-3">
         {sidebarItems.map((item) => {
           const isActive = pathname === item.href;
 
           return (
-            <Link key={item.id} href={item.href} prefetch>
+            <a key={item.id} href={item.href}>
               <div
                 className={cn(
                   "flex items-center gap-3 p-3 mx-2 rounded-lg cursor-pointer transition-all",
@@ -39,11 +38,13 @@ const Sidebar = () => {
                 )}
               >
                 <item.icon
-                  className={(cn("w-5 h-5 "), isActive ? "" : "text-primary")}
+                  className={`w-5 h-5 ${
+                    isActive ? "text-white" : "text-primary"
+                  }`}
                 />
                 <span className="hidden md:block">{item.name}</span>
               </div>
-            </Link>
+            </a>
           );
         })}
       </nav>

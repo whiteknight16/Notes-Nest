@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "../provider/ThemeProvider";
 import Navbar from "../components/Navbar";
 import { AuthProvider } from "../provider/AuthProvider";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import prisma from "@/lib/db";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,16 +22,34 @@ export const metadata: Metadata = {
   description: "Your AI Powered Daily Note Taking App",
 };
 
-export default function RootLayout({
+async function getData(id) {
+  const data = await prisma.user.findUnique({
+    where: { id: id as string },
+    select: { colorScheme: true },
+  });
+  return data;
+}
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { getUser } = getKindeServerSession();
+  const user = await getUser();
+  let data;
+  if (user) {
+    data = await getData(user.id);
+  }
+  console.log(data);
   return (
     <AuthProvider>
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          supressHydrationWarning
+          className={`${geistSans.variable} ${geistMono.variable} antialiased ${
+            data?.colorScheme ?? "theme-orange"
+          }`}
         >
           <ThemeProvider
             attribute="class"

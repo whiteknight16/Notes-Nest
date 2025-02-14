@@ -1,6 +1,7 @@
 "use client";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -19,45 +20,69 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import useStore from "../../store/zustand.store";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import LoadingPage from "../../../components/LoadingPage";
+import { Loader2 } from "lucide-react";
 const SettingsPage = () => {
   const { user, getUser } = useKindeBrowserClient();
   const alsoUser = getUser();
-  const store = useStore();
+
+  //Various states
   const [userData, setUserData] = useState<{
     stripeCustomerId?: string;
     colorScheme?: string;
   } | null>(null);
 
+  const [loading, setLoading] = useState<boolean>(true);
+  const [name, setName] = useState<string>("");
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+
+  const router = useRouter();
+
   // Fetch user data from API
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get(`/api/user/${alsoUser.id}`);
+        const response = await axios.get(`/api/user/${alsoUser?.id}`);
+        const name = alsoUser?.given_name + " " + alsoUser?.family_name;
+        setName(name);
         setUserData(response.data);
-        console.log("Fetched data:", response.data); // Log after setting state
+        console.log("Fetched data:", response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setLoading(false);
       }
     };
 
-    if (store.id) fetchUserData();
-  }, [alsoUser, store.id]);
+    if (alsoUser?.id) fetchUserData();
+  }, [alsoUser]);
 
   // Handle form save
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Saving Data: ", {
-      id: store.id,
-      name: store.name,
-      email: store.email,
-      colorScheme: userData?.colorScheme,
-    });
+    setIsSaving(true);
+    try {
+      const response = await axios.post(`/api/user/${alsoUser?.id}`, {
+        name,
+        colorScheme: userData?.colorScheme,
+      });
+      router.refresh();
+      console.log("Save response:", response.data);
+
+      setIsSaving(false);
+    } catch (error) {
+      console.log("Error saving user data:", error);
+      setIsSaving(false);
+    }
   };
 
+  if (loading) {
+    return <LoadingPage />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-8 px-4">
+    <div className="overflow-hidden h-screen w-full bg-gray-100 dark:bg-gray-900 py-8 px-4">
       {/* Title and description */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
@@ -95,7 +120,8 @@ const SettingsPage = () => {
                 id="name"
                 type="text"
                 placeholder="Enter your name"
-                defaultValue={store.name}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="mt-2 p-3 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
               />
             </div>
@@ -112,14 +138,14 @@ const SettingsPage = () => {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                defaultValue={store.email}
+                defaultValue={alsoUser?.email}
                 disabled
                 className="mt-2 p-3 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
               />
             </div>
 
             {/* Color Theme Selector */}
-            {userData?.stripeCustomerId && (
+            {userData?.stripeCustomerId || (
               <div>
                 <Label
                   htmlFor="color-theme"
@@ -129,8 +155,10 @@ const SettingsPage = () => {
                 </Label>
                 <Select
                   name="color-theme"
-                  id="color-theme"
-                  defaultValue={userData.colorScheme}
+                  value={userData?.colorScheme}
+                  onValueChange={(value) =>
+                    setUserData({ ...userData, colorScheme: value })
+                  }
                   className="mt-2"
                 >
                   <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
@@ -138,8 +166,7 @@ const SettingsPage = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="theme-green">Green</SelectItem>
-                    <SelectItem value="theme-red">Red</SelectItem>
-                    <SelectItem value="theme-blue">Blue</SelectItem>
+                    <SelectItem value="theme-rose">Rose</SelectItem>
                     <SelectItem value="theme-violet">Violet</SelectItem>
                     <SelectItem value="theme-yellow">Yellow</SelectItem>
                     <SelectItem value="theme-orange">Orange</SelectItem>
@@ -151,11 +178,17 @@ const SettingsPage = () => {
 
           {/* Save Button */}
           <CardFooter className="flex justify-end pt-4">
-            <Button
-              type="submit"
-              className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white rounded-md"
-            >
-              Save Changes
+            <Button type="submit" disabled={isSaving}>
+              <Button type="submit" disabled={isSaving}>
+                {isSaving ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  "Save Changes"
+                )}
+              </Button>
             </Button>
           </CardFooter>
         </Card>

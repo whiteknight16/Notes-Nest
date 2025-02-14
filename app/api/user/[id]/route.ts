@@ -29,3 +29,37 @@ export async function GET(
     );
   }
 }
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  console.log("id", id);
+
+  if (!id) {
+    return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+  }
+
+  try {
+    const { name, colorScheme } = await req.json();
+
+    console.log("Received Data:", { name, colorScheme });
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { name, colorScheme },
+    });
+
+    return NextResponse.json(
+      { message: "User updated", user: updatedUser },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

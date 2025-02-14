@@ -10,7 +10,6 @@ import {
 } from "@kinde-oss/kinde-auth-nextjs/components";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { Menu, X } from "lucide-react";
-import Link from "next/link";
 
 export default function Navbar() {
   const { isAuthenticated } = useKindeBrowserClient();
@@ -20,11 +19,11 @@ export default function Navbar() {
     <nav className="w-full bg-white dark:bg-gray-900 shadow-md dark:shadow-lg px-6 py-4 flex justify-between items-center">
       {/* Logo */}
 
-      <Link href="/" prefetch={true}>
+      <a href="/">
         <h1 className="text-3xl font-bold text-black dark:text-white">
           Notes<span className="text-primary">Nest</span>
         </h1>
-      </Link>
+      </a>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex space-x-6 items-center">

@@ -19,9 +19,9 @@ function HomePage() {
       </p>
 
       {/* Call to Action */}
-      <Link prefetch={true} href="/dashboard">
+      <a href="/dashboard">
         <Button className="mt-6 text-lg px-6 py-3">Get Started</Button>
-      </Link>
+      </a>
     </div>
   );
 }
