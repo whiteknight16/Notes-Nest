@@ -31,10 +31,10 @@ const SettingsPage = () => {
   const [userData, setUserData] = useState<{
     stripeCustomerId?: string;
     colorScheme?: string;
+    name?: string;
   } | null>(null);
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [name, setName] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const router = useRouter();
@@ -44,8 +44,6 @@ const SettingsPage = () => {
     const fetchUserData = async () => {
       try {
         const response = await axios.get(`/api/user/${alsoUser?.id}`);
-        const name = alsoUser?.given_name + " " + alsoUser?.family_name;
-        setName(name);
         setUserData(response.data);
         console.log("Fetched data:", response.data);
         setLoading(false);
@@ -63,11 +61,13 @@ const SettingsPage = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      const response = await axios.post(`/api/user/${alsoUser?.id}`, {
-        name,
+      const response = await axios.put(`/api/user/${alsoUser?.id}`, {
+        name: userData?.name,
         colorScheme: userData?.colorScheme,
       });
+
       router.refresh();
+      console.log(name);
       console.log("Save response:", response.data);
 
       setIsSaving(false);
@@ -82,7 +82,7 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="overflow-hidden h-screen w-full bg-gray-100 dark:bg-gray-900 py-8 px-4">
+    <div className="overflow-hidden h-screen w-full bg-gray-100 dark:bg-gray-800 py-8 px-4">
       {/* Title and description */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-semibold text-gray-900 dark:text-white">
@@ -98,7 +98,7 @@ const SettingsPage = () => {
         className="w-full max-w-4xl mx-auto space-y-6"
         onSubmit={handleSave}
       >
-        <Card className="bg-white dark:bg-gray-800 shadow-xl rounded-xl w-full">
+        <Card className="bg-white dark:bg-gray-900 shadow-xl rounded-xl w-full">
           <CardHeader className="pb-4">
             <CardTitle className="text-2xl font-semibold text-gray-900 dark:text-white">
               General Settings
@@ -120,8 +120,10 @@ const SettingsPage = () => {
                 id="name"
                 type="text"
                 placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={userData?.name}
+                onChange={(e) =>
+                  setUserData({ ...userData, name: e.target.value })
+                }
                 className="mt-2 p-3 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600"
               />
             </div>
@@ -145,7 +147,7 @@ const SettingsPage = () => {
             </div>
 
             {/* Color Theme Selector */}
-            {userData?.stripeCustomerId || (
+            {userData?.stripeCustomerId && (
               <div>
                 <Label
                   htmlFor="color-theme"
@@ -159,7 +161,6 @@ const SettingsPage = () => {
                   onValueChange={(value) =>
                     setUserData({ ...userData, colorScheme: value })
                   }
-                  className="mt-2"
                 >
                   <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white">
                     <SelectValue placeholder="Select a theme" />

@@ -14,7 +14,7 @@ export async function GET(
   try {
     const user = await prisma.user.findUnique({
       where: { id },
-      select: { stripeCustomerId: true, colorScheme: true },
+      select: { stripeCustomerId: true, colorScheme: true, name: true },
     });
 
     if (!user)
@@ -30,7 +30,7 @@ export async function GET(
   }
 }
 
-export async function POST(
+export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {

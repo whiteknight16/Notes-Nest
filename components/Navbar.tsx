@@ -12,13 +12,12 @@ import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
-  const { isAuthenticated } = useKindeBrowserClient();
+  const { isAuthenticated, isLoading } = useKindeBrowserClient();
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <nav className="w-full bg-white dark:bg-gray-900 shadow-md dark:shadow-lg px-6 py-4 flex justify-between items-center">
       {/* Logo */}
-
       <a href="/">
         <h1 className="text-3xl font-bold text-black dark:text-white">
           Notes<span className="text-primary">Nest</span>
@@ -29,7 +28,11 @@ export default function Navbar() {
       <div className="hidden md:flex space-x-6 items-center">
         <ModeToggler />
 
-        {isAuthenticated ? (
+        {isLoading ? (
+          <Button variant="ghost" disabled>
+            Loading...
+          </Button>
+        ) : isAuthenticated ? (
           <LogoutLink>
             <Button>Log Out</Button>
           </LogoutLink>
@@ -60,7 +63,11 @@ export default function Navbar() {
           <div className="flex flex-col items-center space-y-4 py-4">
             <ModeToggler />
 
-            {isAuthenticated ? (
+            {isLoading ? (
+              <Button variant="ghost" disabled>
+                Loading...
+              </Button>
+            ) : isAuthenticated ? (
               <LogoutLink>
                 <Button>Log Out</Button>
               </LogoutLink>
