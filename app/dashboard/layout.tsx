@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Sidebar from "../../components/Sidebar";
 import prisma from "../../lib/db";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { unstable_noStore as noStore } from "next/cache";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,6 +31,7 @@ async function getData({
   firstName: string | undefined | null;
   lastName: string | undefined | null;
 }) {
+  noStore();
   const user = await prisma.user.findUnique({
     where: { id: id },
     select: { id: true, stripeCustomerId: true, colorScheme: true },
