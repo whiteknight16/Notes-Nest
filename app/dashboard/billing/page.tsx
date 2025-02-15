@@ -17,12 +17,7 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
 );
 
-const premiumFeatures = [
-  "Change Color Theme",
-  "AI-Powered Notes",
-  "Cloud Sync",
-  "Priority Support",
-];
+const premiumFeatures = ["Change Color Theme"];
 
 const CheckoutForm = ({
   clientSecret,

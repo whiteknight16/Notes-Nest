@@ -6,7 +6,6 @@ import Navbar from "../components/Navbar";
 import { AuthProvider } from "../provider/AuthProvider";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import prisma from "@/lib/db";
-import { unstable_noStore as noStore } from "next/cache";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +35,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  noStore();
   const { getUser } = getKindeServerSession();
   const user = await getUser();
   let data;

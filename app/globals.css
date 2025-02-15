@@ -5,6 +5,14 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+nextjs-portal {
+  display: none;
+}
+
+body {
+  padding: 0 !important;
+  overflow: auto !important;
+}
 
 .theme-orange {
   --background: 0 0% 100%;
