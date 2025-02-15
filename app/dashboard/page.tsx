@@ -183,7 +183,9 @@ export default function DashboardPage() {
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <h2 className="text-2xl font-semibold mb-4">Create New Note</h2>
+            <h2 className="text-2xl font-semibold mb-4">
+              {editingNote ? "Edit The Note" : "Create New Note"}
+            </h2>
 
             {/* Title Input */}
             <input
